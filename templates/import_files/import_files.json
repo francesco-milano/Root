@@ -1,0 +1,311 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory Name"
+		},
+		"blob": {
+			"type": "string"
+		},
+		"sql": {
+			"type": "string"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/import_files')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "csv to sql",
+						"type": "Copy",
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"typeProperties": {
+							"source": {
+								"type": "BlobSource",
+								"recursive": true
+							},
+							"sink": {
+								"type": "SqlSink",
+								"writeBatchSize": 10000,
+								"preCopyScript": "truncate table dbo.fact_flights;"
+							},
+							"enableStaging": false,
+							"enableSkipIncompatibleRow": true,
+							"translator": {
+								"type": "TabularTranslator",
+								"columnMappings": {
+									"Year": "year",
+									"Month": "month",
+									"DayofMonth": "day",
+									"UniqueCarrier": "bk_carrier",
+									"TailNum": "bk_tail",
+									"Origin": "bk_iata_origin",
+									"Dest": "bk_iata_destination",
+									"ArrDelay": "flight_delay_mins",
+									"Distance": "travel_distance_miles",
+									"ActualElapsedTime": "elapsed_time_mins"
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "airline_bzip",
+								"type": "DatasetReference",
+								"parameters": {
+									"year": {
+										"value": "@pipeline().parameters.year",
+										"type": "Expression"
+									}
+								}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "fact_flights",
+								"type": "DatasetReference"
+							}
+						]
+					}
+				],
+				"parameters": {
+					"year": {
+						"type": "String",
+						"defaultValue": "1987"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/airline_bzip')]",
+				"[concat(variables('factoryId'), '/datasets/fact_flights')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/airline_bzip')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "[parameters('blob')]",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"year": {
+						"type": "String",
+						"defaultValue": "1987"
+					}
+				},
+				"type": "AzureBlob",
+				"structure": [
+					{
+						"name": "Year",
+						"type": "String"
+					},
+					{
+						"name": "Month",
+						"type": "String"
+					},
+					{
+						"name": "DayofMonth",
+						"type": "String"
+					},
+					{
+						"name": "DayOfWeek",
+						"type": "String"
+					},
+					{
+						"name": "DepTime",
+						"type": "String"
+					},
+					{
+						"name": "CRSDepTime",
+						"type": "String"
+					},
+					{
+						"name": "ArrTime",
+						"type": "String"
+					},
+					{
+						"name": "CRSArrTime",
+						"type": "String"
+					},
+					{
+						"name": "UniqueCarrier",
+						"type": "String"
+					},
+					{
+						"name": "FlightNum",
+						"type": "String"
+					},
+					{
+						"name": "TailNum",
+						"type": "String"
+					},
+					{
+						"name": "ActualElapsedTime",
+						"type": "String"
+					},
+					{
+						"name": "CRSElapsedTime",
+						"type": "String"
+					},
+					{
+						"name": "AirTime",
+						"type": "String"
+					},
+					{
+						"name": "ArrDelay",
+						"type": "String"
+					},
+					{
+						"name": "DepDelay",
+						"type": "String"
+					},
+					{
+						"name": "Origin",
+						"type": "String"
+					},
+					{
+						"name": "Dest",
+						"type": "String"
+					},
+					{
+						"name": "Distance",
+						"type": "String"
+					},
+					{
+						"name": "TaxiIn",
+						"type": "String"
+					},
+					{
+						"name": "TaxiOut",
+						"type": "String"
+					},
+					{
+						"name": "Cancelled",
+						"type": "String"
+					},
+					{
+						"name": "CancellationCode",
+						"type": "String"
+					},
+					{
+						"name": "Diverted",
+						"type": "String"
+					},
+					{
+						"name": "CarrierDelay",
+						"type": "String"
+					},
+					{
+						"name": "WeatherDelay",
+						"type": "String"
+					},
+					{
+						"name": "NASDelay",
+						"type": "String"
+					},
+					{
+						"name": "SecurityDelay",
+						"type": "String"
+					},
+					{
+						"name": "LateAircraftDelay",
+						"type": "String"
+					}
+				],
+				"typeProperties": {
+					"format": {
+						"type": "TextFormat",
+						"columnDelimiter": ",",
+						"rowDelimiter": "\n",
+						"quoteChar": "\"",
+						"nullValue": "\\N",
+						"encodingName": null,
+						"treatEmptyAsNull": true,
+						"skipLineCount": 0,
+						"firstRowAsHeader": true
+					},
+					"compression": {
+						"type": "BZip2"
+					},
+					"fileName": {
+						"value": "@{dataset().year}.csv.bz2",
+						"type": "Expression"
+					},
+					"folderPath": "airline/bzip"
+				}
+			}
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/fact_flights')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "[parameters('sql')]",
+					"type": "LinkedServiceReference"
+				},
+				"type": "AzureSqlTable",
+				"structure": [
+					{
+						"name": "year",
+						"type": "Int32"
+					},
+					{
+						"name": "month",
+						"type": "Int32"
+					},
+					{
+						"name": "day",
+						"type": "Int32"
+					},
+					{
+						"name": "bk_carrier",
+						"type": "String"
+					},
+					{
+						"name": "bk_tail",
+						"type": "String"
+					},
+					{
+						"name": "bk_iata_origin",
+						"type": "String"
+					},
+					{
+						"name": "bk_iata_destination",
+						"type": "String"
+					},
+					{
+						"name": "flight_delay_mins",
+						"type": "Int32"
+					},
+					{
+						"name": "travel_distance_miles",
+						"type": "Int32"
+					},
+					{
+						"name": "elapsed_time_mins",
+						"type": "Int32"
+					}
+				],
+				"typeProperties": {
+					"tableName": "[concat('[', 'dbo].[fact_flights]')]"
+				}
+			}
+		}
+	]
+}
