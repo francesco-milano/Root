@@ -1,0 +1,36 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"value": "adfsqlsatfm"
+		},
+		"blob_connectionString": {
+			"value": ""
+		},
+		"AzureBlobStorageSinkFileStore1_properties_typeProperties_fileName": {
+			"value": ""
+		},
+		"AzureBlobStorageSinkFileStore1_properties_typeProperties_folderPath": {
+			"value": "@dataset().folder"
+		},
+		"AzureBlobStorageSourceFileStore1_properties_typeProperties_folderPath": {
+			"value": "@dataset().folder"
+		},
+		"airline_bzip_properties_typeProperties_fileName": {
+			"value": "@{dataset().file_pattern}.csv.bz2"
+		},
+		"airline_bzip_properties_typeProperties_folderPath": {
+			"value": "airline/bzip"
+		},
+		"airline_csv_properties_typeProperties_fileName": {
+			"value": "@{dataset().file_pattern}.csv.bz2"
+		},
+		"airline_csv_properties_typeProperties_folderPath": {
+			"value": "airline/csv"
+		},
+		"source_files_properties_typeProperties_folderPath": {
+			"value": "airline/bzip"
+		}
+	}
+}
