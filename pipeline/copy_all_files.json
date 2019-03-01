@@ -3,33 +3,11 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "Lookup1",
-				"type": "Lookup",
-				"policy": {
-					"timeout": "7.00:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"typeProperties": {
-					"source": {
-						"type": "BlobSource",
-						"recursive": false
-					},
-					"dataset": {
-						"referenceName": "source_files",
-						"type": "DatasetReference"
-					},
-					"firstRowOnly": false
-				}
-			},
-			{
 				"name": "ForEach1",
 				"type": "ForEach",
 				"dependsOn": [
 					{
-						"activity": "Lookup1",
+						"activity": "Get Metadata1",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -37,9 +15,10 @@
 				],
 				"typeProperties": {
 					"items": {
-						"value": "@activity('Lookup1').output",
+						"value": "@activity('Get Metadata1').output.childitems",
 						"type": "Expression"
 					},
+					"isSequential": false,
 					"activities": [
 						{
 							"name": "Execute Pipeline1",
@@ -49,14 +28,35 @@
 									"referenceName": "copy_single_file",
 									"type": "PipelineReference"
 								},
+								"waitOnCompletion": false,
 								"parameters": {
 									"year": {
-										"value": "@item().name",
+										"value": "@first(split(item().name, '.'))",
 										"type": "Expression"
 									}
 								}
 							}
 						}
+					]
+				}
+			},
+			{
+				"name": "Get Metadata1",
+				"type": "GetMetadata",
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"typeProperties": {
+					"dataset": {
+						"referenceName": "source_files",
+						"type": "DatasetReference"
+					},
+					"fieldList": [
+						"childItems"
 					]
 				}
 			}
