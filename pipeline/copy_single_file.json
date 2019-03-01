@@ -1,0 +1,93 @@
+{
+	"name": "copy_single_file",
+	"properties": {
+		"activities": [
+			{
+				"name": "bz2_csv",
+				"type": "Copy",
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"typeProperties": {
+					"source": {
+						"type": "BlobSource",
+						"recursive": true
+					},
+					"sink": {
+						"type": "BlobSink"
+					},
+					"enableStaging": false,
+					"enableSkipIncompatibleRow": true,
+					"translator": {
+						"type": "TabularTranslator",
+						"columnMappings": {
+							"Year": "Year",
+							"Month": "Month",
+							"DayofMonth": "DayofMonth",
+							"DayOfWeek": "DayOfWeek",
+							"DepTime": "DepTime",
+							"CRSDepTime": "CRSDepTime",
+							"ArrTime": "ArrTime",
+							"CRSArrTime": "CRSArrTime",
+							"UniqueCarrier": "UniqueCarrier",
+							"FlightNum": "FlightNum",
+							"TailNum": "TailNum",
+							"ActualElapsedTime": "ActualElapsedTime",
+							"CRSElapsedTime": "CRSElapsedTime",
+							"AirTime": "AirTime",
+							"ArrDelay": "ArrDelay",
+							"DepDelay": "DepDelay",
+							"Origin": "Origin",
+							"Dest": "Dest",
+							"Distance": "Distance",
+							"TaxiIn": "TaxiIn",
+							"TaxiOut": "TaxiOut",
+							"Cancelled": "Cancelled",
+							"CancellationCode": "CancellationCode",
+							"Diverted": "Diverted",
+							"CarrierDelay": "CarrierDelay",
+							"WeatherDelay": "WeatherDelay",
+							"NASDelay": "NASDelay",
+							"SecurityDelay": "SecurityDelay",
+							"LateAircraftDelay": "LateAircraftDelay"
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "airline_bzip",
+						"type": "DatasetReference",
+						"parameters": {
+							"file_pattern": {
+								"value": "@pipeline().parameters.year",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "airline_csv",
+						"type": "DatasetReference",
+						"parameters": {
+							"file_pattern": {
+								"value": "@pipeline().parameters.year",
+								"type": "Expression"
+							}
+						}
+					}
+				]
+			}
+		],
+		"parameters": {
+			"year": {
+				"type": "String",
+				"defaultValue": "1987"
+			}
+		}
+	}
+}
