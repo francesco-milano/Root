@@ -1,0 +1,154 @@
+{
+	"name": "airline_bzip",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "blob",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"file_pattern": {
+				"type": "String",
+				"defaultValue": "*"
+			}
+		},
+		"type": "AzureBlob",
+		"structure": [
+			{
+				"name": "Year",
+				"type": "String"
+			},
+			{
+				"name": "Month",
+				"type": "String"
+			},
+			{
+				"name": "DayofMonth",
+				"type": "String"
+			},
+			{
+				"name": "DayOfWeek",
+				"type": "String"
+			},
+			{
+				"name": "DepTime",
+				"type": "String"
+			},
+			{
+				"name": "CRSDepTime",
+				"type": "String"
+			},
+			{
+				"name": "ArrTime",
+				"type": "String"
+			},
+			{
+				"name": "CRSArrTime",
+				"type": "String"
+			},
+			{
+				"name": "UniqueCarrier",
+				"type": "String"
+			},
+			{
+				"name": "FlightNum",
+				"type": "String"
+			},
+			{
+				"name": "TailNum",
+				"type": "String"
+			},
+			{
+				"name": "ActualElapsedTime",
+				"type": "String"
+			},
+			{
+				"name": "CRSElapsedTime",
+				"type": "String"
+			},
+			{
+				"name": "AirTime",
+				"type": "String"
+			},
+			{
+				"name": "ArrDelay",
+				"type": "String"
+			},
+			{
+				"name": "DepDelay",
+				"type": "String"
+			},
+			{
+				"name": "Origin",
+				"type": "String"
+			},
+			{
+				"name": "Dest",
+				"type": "String"
+			},
+			{
+				"name": "Distance",
+				"type": "String"
+			},
+			{
+				"name": "TaxiIn",
+				"type": "String"
+			},
+			{
+				"name": "TaxiOut",
+				"type": "String"
+			},
+			{
+				"name": "Cancelled",
+				"type": "String"
+			},
+			{
+				"name": "CancellationCode",
+				"type": "String"
+			},
+			{
+				"name": "Diverted",
+				"type": "String"
+			},
+			{
+				"name": "CarrierDelay",
+				"type": "String"
+			},
+			{
+				"name": "WeatherDelay",
+				"type": "String"
+			},
+			{
+				"name": "NASDelay",
+				"type": "String"
+			},
+			{
+				"name": "SecurityDelay",
+				"type": "String"
+			},
+			{
+				"name": "LateAircraftDelay",
+				"type": "String"
+			}
+		],
+		"typeProperties": {
+			"format": {
+				"type": "TextFormat",
+				"columnDelimiter": ",",
+				"rowDelimiter": "",
+				"nullValue": "\\N",
+				"encodingName": null,
+				"treatEmptyAsNull": true,
+				"skipLineCount": 0,
+				"firstRowAsHeader": true
+			},
+			"compression": {
+				"type": "BZip2"
+			},
+			"fileName": {
+				"value": "@{dataset().file_pattern}.csv.bz2",
+				"type": "Expression"
+			},
+			"folderPath": "airline/bzip"
+		}
+	}
+}
