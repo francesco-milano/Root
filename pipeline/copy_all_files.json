@@ -15,15 +15,49 @@
 				"typeProperties": {
 					"source": {
 						"type": "BlobSource",
-						"recursive": true
+						"recursive": false
 					},
 					"dataset": {
-						"referenceName": "airline_bzip",
-						"type": "DatasetReference",
-						"parameters": {
-							"file_pattern": "*"
-						}
+						"referenceName": "source_files",
+						"type": "DatasetReference"
+					},
+					"firstRowOnly": false
+				}
+			},
+			{
+				"name": "ForEach1",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "Lookup1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
 					}
+				],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('Lookup1').output",
+						"type": "Expression"
+					},
+					"activities": [
+						{
+							"name": "Execute Pipeline1",
+							"type": "ExecutePipeline",
+							"typeProperties": {
+								"pipeline": {
+									"referenceName": "copy_single_file",
+									"type": "PipelineReference"
+								},
+								"parameters": {
+									"year": {
+										"value": "@item().name",
+										"type": "Expression"
+									}
+								}
+							}
+						}
+					]
 				}
 			}
 		]
