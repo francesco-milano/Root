@@ -1,0 +1,13 @@
+{
+	"name": "source_files",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "blob",
+			"type": "LinkedServiceReference"
+		},
+		"type": "AzureBlob",
+		"typeProperties": {
+			"folderPath": "airline/bzip"
+		}
+	}
+}
